@@ -1,0 +1,13 @@
+{
+	"loadBalancer": {
+	   "policy": "etcd", 
+	    "ETCD": {
+		  "url": "https://<etcdHost>:2379"
+		},
+		"clientRandom": {
+		  "proxies": ["https://<proxyHost>:8050/platform/rest/symrest/", "https://<proxyHost1>:8050/platform/rest/symrest/"]
+		},
+		"cafileForETCD": "",
+		"cafileForProxy": ""
+	}
+}

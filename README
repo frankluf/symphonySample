@@ -1,0 +1,156 @@
+=================================================================
+
+README for the "CloudProxyClient" Sample (Java)
+
+=================================================================
+
+
+===============================
+CONTENTS
+===============================
+1. Summary
+2. About this sample
+3. Build this sample
+4. Run this sample
+
+
+===============================
+1. Summary
+===============================
+This readme file describes how to compile and run the CloudProxyClient sample.
+
+===============================
+2. About this sample
+===============================
+This sample contains 1 client.
+
+===============================
+3. Build this sample
+===============================
+
+3.1. On Windows:
+===============================
+3.1.1. Compile sample with the build.bat file. You can build client application samples at the same time.       
+
+       Change to the %SOAM_HOME%\@VERSION_NUM@\samples\Java\CloudProxyClient directory and run the .bat file: 
+        build.bat 
+
+       The package CloudProxyClient.jar is placed in the %SOAM_HOME%\@VERSION_NUM@\samples\Java\CloudProxyClient directory
+
+===============================
+3.2. On Linux:
+===============================
+
+3.2.1. Change to the conf directory under the installation directory for IBM Spectrum Symphony Developer Edition or IBM Spectrum Symphony SDK. 
+
+       For example, if you installed IBM Spectrum Symphony Developer Edition or IBM Spectrum Symphony SDK in /opt/symDE, go to /opt/symDE/conf:
+   
+       cd /opt/symDE
+
+3.2.2. Compile the sample.
+
+       a. Change to the CloudProxyClient directory:
+ 
+          cd @VERSION_NUM@/samples/Java/CloudProxyClient
+
+       b. Run GNU Make or Ant to build the sample:
+
+          make
+
+          The package CloudProxyClient.jar is placed in the @VERSION_NUM@/samples/Java/CloudProxyClient directory.
+
+===============================
+4. Run this sample
+===============================
+
+Complete these steps to run the sample on Windows/Linux; ensure that you add the JRE to your PATH environment variable.
+
+4.1. Configure the symrest_client.json configuration file.
+
+4.1.1. Before configuring symrest_client.json, change to the conf directory.
+	 
+4.1.2. Configure the following parameters:
+
+     loadBalancer
+       Required. Define the parameters in this section to set the load balancing policy.          
+       policy
+        Required. Load balancing policy for the client. Valid values are "etcd" or "random". "etcd" means to retrieve the Proxy URL
+     from ETCD; "random" means to retrieve the URL from a well-known Proxy list, which must be configured in the clientRandom parameter.
+	 Default: "etcd"
+     
+     cafileForETCD
+     Optional. Path to the CA certificate used by the ETCD client.
+	 Default: ""
+     
+     cafileForProxy
+     Optional. Path to the CA certificate used by the Proxy client.
+	 Default: ""
+     
+     ETCD
+     Optional. When the policy parameter is set to "etcd", this parameter is required; otherwise, this parameter is optional.
+     url
+        ETCD URL and port. Required When the policy parameter is set to "etcd". 
+	 Default: "https://<etcdHost>:2379"
+        
+     clientRandom
+     Optional. When the policy parmameter is set to "random", this parameter is required; otherwise, this parameter is optional.
+     proxies
+        Proxy URL and port list. Required when the policy parameter is set to "random". Separate multiple proxy URLs by a comma.
+	 Default: "https://<proxyHost>:8050/platform/rest/symrest/"
+        
+4.2. Run the symping sample application. This command creates a session for symping, submits 10 tasks to the cluster, selects URLs from ETCD servers or a well-known proxy list,  fetches task results and closes the session. 
+     All actions are completed in a command call such as symping.  Change to the directory in which the CloudProxyClient.jar is located.
+   	
+     java -DCONF_DIR=<conf_dir> -jar CloudProxyClient.jar
+     - <conf_dir>: (Required) Directory containing the symrest_test.json and symrest_client.log4j.properties configuration files, which are located in the CloudProxyClient configuration directory (@VERSION_NUM@/samples/Java/CloudProxyClient/conf).
+
+4.3. Execute a separate HTTP REST request to create session, submit task, fetch task result, and delete session:
+ 
+     create session:
+      java -DCONF_DIR=<conf_dir> -jar CloudProxyClient.jar -action <actionName> -appName <appName> -sessionId <sessionId> -clusterId <clusterId> -source <sourceJson>
+      - <conf_dir>: (Required) Directory containing the symrest_test.json and symrest_client.log4j.properties configuration files.
+      - <actionName>: (Required) "createSession" action to create a session. 
+      - <appName>: (Required) Name of application you want to run.
+      - <clusterId>: (Optional) ID of the cluster to connect to.
+      - <sourceJson>: (Required) Path to JSON file which contains the JSON string as the HTTP request parameter.
+   
+     submit task:
+      java -DCONF_DIR=<conf_dir> -jar CloudProxyClient.jar -action <actionName> -appName <appName> -sessionId <sessionId> -clusterId <clusterId> -source <sourceJson> 
+      - <conf_dir>: (Required) Directory containing the symrest_test.json and symrest_client.log4j.properties configuration files.
+      - <actionName>: (Required) "submitTask" action to submit a task.
+      - <appName>: (Required) Name of application you want to run.
+      - <sessionId>: (Required) ID of the newly created session.
+      - <clusterId>: (Optional) ID of the cluster to connect to.
+      - <sourceJson>: (Required) Path to JSON file which contains the JSON string as the HTTP request parameter.    
+    
+     fetch task result:
+      java -DCONF_DIR=<conf_dir> -jar CloudProxyClient.jar -action <actionName> -appName <appName> -sessionId <sessionId> -clusterId <clusterId> -countMax <countMax> -filter <filterTaskId> -source <sourceJson>
+      - <conf_dir>: (Required) Directory containing the symrest_test.json and symrest_client.log4j.properties configuration files.
+      - <actionName>: (Required) "fetchResult" action to fetch the task result.
+      - <appName>: (Required) Name of application you want to run.
+      - <sessionId>: (Required) ID of the newly created session.
+      - <clusterId>: (Optional) ID of the cluster to connect to.
+      - <countMax>: (Optional) Maximum number of tasks you want to fetch results for.
+      - <filterTaskId>: (Optional) Comma-separated task ID set to filter task results. 
+      - <sourceJson>: (Required) Path to JSON file which contains the JSON string as the HTTP request parameter.
+    
+     close session:
+      java -DCONF_DIR=<conf_dir> -jar CloudProxyClient.jar -action <actionName> -appName <appName> -sessionId <sessionId> -clusterId <clusterId> 
+      - <conf_dir>: (Required) Directory containing the symrest_test.json and symrest_client.log4j.properties configuration files.
+      - <actionName>: (Required) "closeSession" action to close the session.
+      - <appName>: (Required) Name of application.
+      - <sessionId>: (Required) ID of the newly created session.
+      - <clusterId>: (Optional) ID of the cluster to connect to.
+      - <sourceJson>: (Required) Path to JSON file which contains the JSON string as the HTTP request parameter.
+    
+       
+===============================================================================
+This file is a part of the packages for IBM Spectrum Symphony Developer Edition and IBM Spectrum Symphony SDK, and contains information pertaining to the usage of the IBM Spectrum Symphony API.
+
+ . 
+ 
+
+This exposed source code is the confidential and proprietary property of
+IBM Corporation. Your right to use is strictly limited by the terms of the
+license agreement entered into with IBM Corporation. 
+===============================================================================

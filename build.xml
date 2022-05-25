@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="CloudProxyClient" default="run" basedir=".">
+    <description>Build CloudProxyClient.jar</description>
+    <property environment="env" />
+    <property name="lib.dir" value="lib" />
+    <property name="jarfilename" value="${ant.project.name}.jar" />
+    <property name="src" value="src" />
+    <property name="classes" value="bin/classes" />
+    <property name="lib" value="lib" />
+    <property name="msg.path" value="com/platform/symphony/samples/CloudProxyClient/msg" />  
+    
+    <path id="compile.classpath">           
+        <fileset dir="${lib.dir}">
+            <include name="*.jar"/>
+        </fileset>              
+    </path>
+    
+    <target name="init">
+        <mkdir dir="${classes}" />
+        <mkdir dir="${lib}" />
+    </target>
+
+    <target name="compile" depends="init" description="compile target">
+        <javac srcdir="${src}" destdir="${classes}" includeantruntime="true" debug="true" debuglevel="lines,source">
+            <classpath refid="compile.classpath"/>
+        </javac>
+    </target>
+    
+    <!-- Copy properties files needed by jar -->
+    <target name="copy_properties" depends="compile">
+        <copy todir="${classes}/${msg.path}">
+             <fileset  dir="${src}/${msg.path}" includes="*.properties" />
+        </copy>
+    </target>        
+    
+    <target name="jar" depends="copy_properties" description="make jar file">
+        <jar jarfile="lib/${jarfilename}" basedir="${classes}">
+            <manifest>
+                <attribute name="Main-Class" value="com.platform.symphony.samples.CloudProxyClient.RestClientMain" />
+                <attribute name="Class-Path" value="."></attribute>
+            </manifest>
+            <fileset dir="${src}" includes="*.xml"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/commons-beanutils-1.8.3.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/commons-codec-1.8.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/commons-collections-3.2.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/commons-lang3-3.4.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/commons-lang-2.6.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/commons-logging-1.1.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/commons-cli-1.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/converter-jackson-2.1.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/guava-20.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/jackson-annotations-2.9.9.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/jackson-core-2.9.9.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/jackson-databind-2.9.9.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/jackson-datatype-joda-2.7.2.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/log4j-1.2.16.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/logging-interceptor-3.3.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/slf4j-api-1.7.22.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/httpclient-4.5.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/httpcore-4.4.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${lib.dir}/httpmime-4.5.jar"/>
+        </jar>
+    </target>
+
+    <target name="run" depends="jar">
+         <move file="${lib.dir}/${jarfilename}" todir="."/>        
+    </target>
+
+    <target name="clean">
+        <delete dir="${classes}" />
+    </target>
+</project>

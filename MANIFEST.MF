@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Created-By: 1.7.0 (IBM Corporation)
+Main-Class: com.platform.symphony.samples.CloudProxyClient.RestClientMain
+Class-Path: .
+
